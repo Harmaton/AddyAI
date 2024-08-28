@@ -1,14 +1,16 @@
-FROM node:alpine
+# Use Node.js as the base image
+FROM node:18.17.0-alpine
+
+# Install pnpm
+RUN npm install -g pnpm
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY package*.json pnpm-lock.yaml ./
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
 COPY . .
-
-RUN pnpm ci --only=production
 
 RUN pnpm run build
 

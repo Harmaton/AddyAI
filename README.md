@@ -1,6 +1,6 @@
 # AI-Powered Financial Services Platform
 
-Welcome to our cutting-edge AI-powered financial services platform. This project leverages artificial intelligence to revolutionize loan origination, document lending, and customer communication processes.
+This project leverages artificial intelligence to revolutionize loan origination, document lending, and customer communication processes.
 
 ## Features
 
@@ -42,8 +42,8 @@ Improve customer engagement with our advanced email communication system:
 
 This project includes Docker support for easy deployment:
 
-- Build the Docker image: `docker build -t ai-financial-services .`
-- Run the container: `docker run -p 3000:3000 ai-financial-services`
+- Build the Docker image: `docker build -t ai-addy .`
+- Run the container: `docker run -p 3000:3000 ai-addy`
 
 ## Contributing
 
