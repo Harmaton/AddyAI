@@ -1,11 +1,13 @@
 import Image from "next/image";
 
 export default function Home() {
-  const url = process.env.API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'API URL not set';
+  const nodeEnv = process.env.NODE_ENV || 'Environment not set';
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-     ADDY AI
-    Sample env  {url}, {process.env.API_URL} + NODE ENV {process.env.NODE_ENV}
+      <h1>ADDY AI</h1>
+      <p>API URL: {apiUrl}</p>
+      <p>Node Environment: {nodeEnv}</p>
     </main>
   );
 }
