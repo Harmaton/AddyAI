@@ -15,11 +15,11 @@ COPY . .
 RUN pnpm run build
 
 # Accept build arguments
-ARG API_URL
+ARG NEXT_PUBLIC_API_URL
 ARG NODE_ENV
 
 # Set environment variables
-ENV API_URL=$API_URL
+ENV NEXT_PUBLIC_API_URL=$API_URL
 ENV NODE_ENV=$NODE_ENV
 
 
