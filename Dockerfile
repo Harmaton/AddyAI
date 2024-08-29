@@ -14,6 +14,14 @@ COPY . .
 
 RUN pnpm run build
 
+# Get environment variables
+ARG NODE_ENV
+ENV NODE_ENV=${NODE_ENV}
+
+ARG API_URL
+ENV API_URL=${API_URL}
+
+
 EXPOSE 3000
 
 # Start the application
