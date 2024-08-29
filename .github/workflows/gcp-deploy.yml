@@ -34,13 +34,12 @@ jobs:
 
       - name: Build and Push Docker Image
         env:
-          NODE_ENV: production
           API_URL: ${{ secrets.API_URL }}
+          NODE_ENV: production
         run: |
           docker build \
-            --build-arg NODE_ENV=$NODE_ENV \
             --build-arg API_URL=$API_URL \
-            --build-arg OTHER_ENV_VAR=$OTHER_ENV_VAR \
+            --build-arg NODE_ENV=$NODE_ENV \
             -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
@@ -50,4 +49,6 @@ jobs:
             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest \
             --platform managed \
             --region us-central1 \
+            --set-env-vars "API_URL=${{ secrets.API_URL }},NODE_ENV=production" \
             --allow-unauthenticated
+  
