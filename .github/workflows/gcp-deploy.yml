@@ -32,23 +32,23 @@ jobs:
         run: |
           gcloud auth configure-docker
 
-          - name: Build and Push Docker Image
-          env:
-            NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-            NODE_ENV: production
-          run: |
-            docker build \
-              --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
-              --build-arg NODE_ENV=$NODE_ENV \
-              -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest .
-            docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
-  
-          - name: Deploy to Cloud Run
-            run: |
-              gcloud run deploy $SERVICE_NAME \
-                --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest \
-                --platform managed \
-                --region us-central1 \
-                --set-env-vars "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }},NODE_ENV=production" \
-                --allow-unauthenticated
+      - name: Build and Push Docker Image
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NODE_ENV: production
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
+            --build-arg NODE_ENV=$NODE_ENV \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest .
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy $SERVICE_NAME \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest \
+            --platform managed \
+            --region us-central1 \
+            --set-env-vars "NEXT_PUBLIC_API_URLL=${{ secrets.NEXT_PUBLIC_API_URL }},NODE_ENV=production" \
+            --allow-unauthenticated
   
