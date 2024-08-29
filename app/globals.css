@@ -4,30 +4,50 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+  --background-rgb: 255, 255, 255;
+  --accent-color: 167, 139, 250; /* Purple 400 */
+  --button-color: 167, 139, 250; /* Purple 400 for buttons */
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    color: rgb(var(--accent-color));
+  }
+}
+
+@layer components {
+  .btn {
+    background-color: rgb(var(--button-color));
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn:hover {
+    background-color: rgba(var(--button-color), 0.8);
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+.accent-bg {
+  background-color: rgb(var(--accent-color));
+}
+
+.accent-text {
+  color: rgb(var(--accent-color));
+}
+
+.accent-border {
+  border-color: rgb(var(--accent-color));
 }

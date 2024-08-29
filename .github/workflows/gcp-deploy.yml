@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repository 🏗️
         uses: actions/checkout@v2
 
       - name: Google Cloud Auth
@@ -35,11 +35,9 @@ jobs:
       - name: Build and Push Docker Image
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
-          NODE_ENV: production
         run: |
-          docker build \
-            --build-arg NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
-            --build-arg NODE_ENV=$NODE_ENV \
+          echo $NEXT_PUBLIC_API_URL | docker build \
+            --secret id=NEXT_PUBLIC_API_URL,env=NEXT_PUBLIC_API_URL \
             -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest .
           docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest
 
@@ -49,6 +47,6 @@ jobs:
             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest \
             --platform managed \
             --region us-central1 \
-            --set-env-vars "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }},NODE_ENV=production" \
+            --set-env-vars "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" \
             --allow-unauthenticated
   
