@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
      ADDY AI
-    Sample env  {url} + NODE ENV {process.env.NODE_ENV}
+    Sample env  {url}, {process.env.API_URL} + NODE ENV {process.env.NODE_ENV}
     </main>
   );
 }
