@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface Email {
     id: string;
@@ -30,6 +31,24 @@ export default function Page() {
       from: 'mike@example.com',
       subject: 'Lunch Next Week?',
       body: "Hey! I was wondering if you'd like to grab lunch next week. Let me know if you're free!"
+    },
+    {
+      id: '4',
+      from: 'john@example.com',
+      subject: 'Meeting Tomorrow',
+      body: 'Hi there, just a reminder about our meeting tomorrow at 2 PM. Looking forward to seeing you!'
+    },
+    {
+      id: '5',
+      from: 'sarah@example.com',
+      subject: 'Project Update',
+      body: 'Hello, I wanted to give you a quick update on the project. We\'ve made significant progress and are on track to meet our deadline.'
+    },
+    {
+      id: '6',
+      from: 'mike@example.com',
+      subject: 'Lunch Next Week?',
+      body: "Hey! I was wondering if you'd like to grab lunch next week. Let me know if you're free!"
     }
   ]);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
@@ -37,9 +56,31 @@ export default function Page() {
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isLoanDetailsOpen, setIsLoanDetailsOpen] = useState(false);
   const [generatedReply, setGeneratedReply] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const emailsPerPage = 4;
+  const indexOfLastEmail = currentPage * emailsPerPage;
+  const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
+  const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
+  const totalPages = Math.ceil(emails.length / emailsPerPage);
 
   const handleEmailClick = (email: Email) => {
     setSelectedEmail(email);
+  };
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   const handleReply = () => {
@@ -61,26 +102,45 @@ export default function Page() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="overflow-y-auto max-h-screen">
-        {emails.length > 0 ? (
-          emails.map((email) => (
-            <div 
-              key={email.id} 
-              className="flex items-center p-4 border-b hover:bg-gray-100 cursor-pointer"
-              onClick={() => handleEmailClick(email)}
-            >
-              <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">
-                {email.from.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-grow">
-                <h3 className="font-semibold">{email.from}</h3>
-                <p className="text-sm text-gray-600 truncate">{email.subject}</p>
-                <div className="mt-4 flex items-center">
-                  <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full border">Inbox</span>
-                  <span className="text-xs text-gray-500 ml-2">2 hours ago</span>
+      {currentEmails.length > 0 ? (
+          <>
+            {currentEmails.map((email) => (
+              <div 
+                key={email.id} 
+                className="flex items-center p-4 border-b hover:bg-gray-100 cursor-pointer"
+                onClick={() => handleEmailClick(email)}
+              >
+                <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">
+                  {email.from.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex-grow">
+                  <h3 className="font-semibold">{email.from}</h3>
+                  <p className="text-sm text-gray-600 truncate">{email.subject}</p>
+                  <div className="mt-4 flex items-center">
+                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full border">Inbox</span>
+                    <span className="text-xs text-gray-500 ml-2">2 hours ago</span>
+                  </div>
                 </div>
               </div>
+            ))}
+            <div className="flex justify-end mt-4">
+              <Button onClick={handlePreviousPage} disabled={currentPage === 1} className="mx-1">
+                <ArrowLeft />
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <Button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`mx-1 ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                >
+                  {page}
+                </Button>
+              ))}
+              <Button onClick={handleNextPage} disabled={currentPage === totalPages} className="mx-1">
+                <ArrowRight />
+              </Button>
             </div>
-          ))
+          </>
         ) : (
           <p className="p-4 text-center text-gray-500">No new emails in your inbox.</p>
         )}

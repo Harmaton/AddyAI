@@ -115,9 +115,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Main Content Area */}
         <div className="flex flex-col flex-1 md:ml-36">
           {/* Inner Navbar */}
-          <nav className="bg-white shadow-sm p-4 flex justify-between items-center">
+          <nav className="bg-white mr-4 shadow-sm p-4 flex justify-between items-center">
             <ul className="flex space-x-4">
-              <li><Link href="/inbox" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Inbox</Link></li>
+              <li><Link href="#" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Open - </Link></li>
               <li><Link href="/unread" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Unread</Link></li>
               <li><Link href="/sent" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Sent</Link></li>
             </ul>
