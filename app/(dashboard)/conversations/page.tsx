@@ -1,69 +1,48 @@
 'use client'
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
-
-interface Email {
-    id: string;
-    from: string;
-    subject: string;
-    body: string;
-}
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/firebase";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export default function Page() {
-  const [emails, setEmails] = useState<Email[]>([
-    {
-      id: '1',
-      from: 'john@example.com',
-      subject: 'Meeting Tomorrow',
-      body: 'Hi there, just a reminder about our meeting tomorrow at 2 PM. Looking forward to seeing you!'
-    },
-    {
-      id: '2',
-      from: 'sarah@example.com',
-      subject: 'Project Update',
-      body: 'Hello, I wanted to give you a quick update on the project. We\'ve made significant progress and are on track to meet our deadline.'
-    },
-    {
-      id: '3',
-      from: 'mike@example.com',
-      subject: 'Lunch Next Week?',
-      body: "Hey! I was wondering if you'd like to grab lunch next week. Let me know if you're free!"
-    },
-    {
-      id: '4',
-      from: 'john@example.com',
-      subject: 'Meeting Tomorrow',
-      body: 'Hi there, just a reminder about our meeting tomorrow at 2 PM. Looking forward to seeing you!'
-    },
-    {
-      id: '5',
-      from: 'sarah@example.com',
-      subject: 'Project Update',
-      body: 'Hello, I wanted to give you a quick update on the project. We\'ve made significant progress and are on track to meet our deadline.'
-    },
-    {
-      id: '6',
-      from: 'mike@example.com',
-      subject: 'Lunch Next Week?',
-      body: "Hey! I was wondering if you'd like to grab lunch next week. Let me know if you're free!"
-    }
-  ]);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
-  const [aiResponse, setAiResponse] = useState('');
+  const [emails, setEmails] = useState<any[]>([]);
+  const [selectedEmail, setSelectedEmail] = useState<any | null>(null);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isLoanDetailsOpen, setIsLoanDetailsOpen] = useState(false);
   const [generatedReply, setGeneratedReply] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [userEmail, setUserEmail] = useState('');
+  const [isEmailPromptOpen, setIsEmailPromptOpen] = useState(false);
   const emailsPerPage = 4;
+
+  useEffect(() => {
+    if (userEmail) {
+      fetchEmails(userEmail);
+    } else {
+      setIsEmailPromptOpen(true);
+    }
+  }, [userEmail]);
+  const fetchEmails = async (email: string) => {
+    const q = query(collection(db, "emails"), where("email", "==", email));
+    const querySnapshot = await getDocs(q);
+    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as any); // Changed 'Email' to 'any' to fix the error
+    setEmails(fetchedEmails);
+  };
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsEmailPromptOpen(false);
+  };
+
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
   const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
   const totalPages = Math.ceil(emails.length / emailsPerPage);
 
-  const handleEmailClick = (email: Email) => {
+  const handleEmailClick = (email: any) => {
     setSelectedEmail(email);
   };
 
@@ -83,18 +62,7 @@ export default function Page() {
     }
   };
 
-  const handleReply = () => {
-    // Implement reply functionality
-    console.log('Reply clicked');
-  };
-
-  const handleForward = () => {
-    // Implement forward functionality
-    console.log('Forward clicked');
-  };
-
   const handleSendReply = () => {
-    // Implement send reply functionality
     console.log('Send reply clicked');
     setIsReplyModalOpen(false);
   };
@@ -102,7 +70,7 @@ export default function Page() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="overflow-y-auto max-h-screen">
-      {currentEmails.length > 0 ? (
+        {currentEmails.length > 0 ? (
           <>
             {currentEmails.map((email) => (
               <div 
@@ -153,14 +121,11 @@ export default function Page() {
                 <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">
                   {selectedEmail.from.charAt(0).toUpperCase()}
                 </div>
-                
                 <div>
                   <h2 className="text-xl font-bold">{selectedEmail.from}</h2>
-                  
                 </div>
               </div>
               <div className="text-sm text-gray-500">
-                {/* Replace with actual time calculation */}
                 2 hours ago
               </div>
             </div>
@@ -168,7 +133,6 @@ export default function Page() {
               <p className="text-sm text-gray-700 mb-2">To: {selectedEmail.from}</p>
               <p className="text-sm text-gray-700 mb-4">Date: {selectedEmail.from}</p>
             </div>
-
             <div className="space-y-4 mb-4">
               <div className="bg-gray-100 p-4 rounded-lg">
                 <h3 className="flex items-center font-semibold mb-2">
@@ -193,7 +157,6 @@ export default function Page() {
             <div className="mb-4">
               <p>{selectedEmail.body}</p>
             </div>
-            
             <div className="flex space-x-4 mt-4">
               <button
                 onClick={() => setIsReplyModalOpen(true)}
@@ -204,7 +167,6 @@ export default function Page() {
                 </svg>
                 Reply
               </button>
-              
               <button
                 onClick={() => setIsLoanDetailsOpen(!isLoanDetailsOpen)}
                 className="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
@@ -215,7 +177,6 @@ export default function Page() {
                 Loan Details
               </button>
             </div>
-
             {isReplyModalOpen && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="bg-white p-6 rounded-lg w-full max-w-md">
@@ -271,7 +232,6 @@ export default function Page() {
                 </div>
               </div>
             )}
-
             {isLoanDetailsOpen && (
               <div className="fixed inset-0 z-50 overflow-auto bg-black bg-opacity-50 flex items-center justify-center">
                 <div className="bg-white p-8 rounded-lg max-w-md w-full">
@@ -286,7 +246,6 @@ export default function Page() {
                       </svg>
                     </button>
                   </div>
-                  {/* Add loan details here */}
                   <p>Loan details will be displayed here.</p>
                 </div>
               </div>
@@ -296,6 +255,39 @@ export default function Page() {
           <p className="text-center text-gray-500">No email selected.</p>
         )}
       </div>
+      <Dialog open={isEmailPromptOpen} onOpenChange={setIsEmailPromptOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Enter Your Email</DialogTitle>
+            <DialogDescription>
+              Please enter your email to fetch your emails.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEmailSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  required
+                />
+              </div>
+              <DialogFooter>
+                <button
+                  type="submit"
+                  className="py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Submit
+                </button>
+              </DialogFooter>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
