@@ -28,7 +28,7 @@ export default function Page() {
       {!hasAgent ? (
        <div className="bg-white rounded-lg shadow-md p-6">
        <h2 className="text-2xl font-bold mb-4">Create Your Agent</h2>
-       <p className="mb-4">You don't have an agent yet. Create one to get started with your chatbot.</p>
+       <p className="mb-4">You dont have an agent yet. Create one to get started with your chatbot.</p>
        <Dialog>
          <DialogTrigger asChild>
            <Button className="bg-violet-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
