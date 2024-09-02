@@ -12,13 +12,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
 import {
-  BarChart,
-  BookmarkIcon,
   LineChart,
   PenBox,
-  Sparkles,
-  TicketSlash,
-  UserCircle,
+  Sparkles
 } from "lucide-react";
 
 import Avatar from "@/components/icon-avatar";
@@ -116,11 +112,11 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-col flex-1 md:ml-36">
           {/* Inner Navbar */}
           <nav className="bg-white mr-4 shadow-sm p-4 flex justify-between items-center">
-            <ul className="flex space-x-4">
+            {/* <ul className="flex space-x-4">
               <li><Link href="#" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Open - </Link></li>
               <li><Link href="/unread" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Unread</Link></li>
               <li><Link href="/sent" className="text-black hover:underline hover:text-blue-600 active:text-blue-600">Sent</Link></li>
-            </ul>
+            </ul> */}
             <div className="flex items-center mr-2">
               {user?.photoURL ? (
                 <Image

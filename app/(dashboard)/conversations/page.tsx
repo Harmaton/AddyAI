@@ -2,14 +2,68 @@
 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import ReactTimeago from 'react-timeago'
+import { Input } from "@/components/ui/input";
+
+interface Email {
+  headers: {
+    return_path: string;
+    received: string[];
+    date: string;
+    from: string;
+    to: string;
+    message_id: string;
+    subject: string;
+    mime_version: string;
+    content_type: string;
+    delivered_to: string;
+    received_spf: string;
+    authentication_results: string;
+    user_agent: string;
+  };
+  envelope: {
+    to: string;
+    from: string;
+    helo_domain: string;
+    remote_ip: string;
+    recipients: string[];
+    spf: {
+      result: string;
+      domain: string;
+    };
+    tls: boolean;
+  };
+  plain: string;
+  html: string;
+  reply_plain: string;
+  attachments: {
+    content: string;
+    file_name: string;
+    content_type: string;
+    size: number;
+    disposition: string;
+  }[];
+  email: string;
+  subjectSummary: string;
+  loanDetails: {
+    loanAmount: number;
+    interestRate: number;
+    term: string;
+  };
+  generatedResponse: string;
+  eligibilityData: {
+    isEligible: boolean;
+    reason: string;
+  };
+}
 
 export default function Page() {
-  const [emails, setEmails] = useState<any[]>([]);
-  const [selectedEmail, setSelectedEmail] = useState<any | null>(null);
+  const [emails, setEmails] = useState<Email[]>([]);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
   const [isLoanDetailsOpen, setIsLoanDetailsOpen] = useState(false);
   const [generatedReply, setGeneratedReply] = useState('');
@@ -25,10 +79,11 @@ export default function Page() {
       setIsEmailPromptOpen(true);
     }
   }, [userEmail]);
+
   const fetchEmails = async (email: string) => {
     const q = query(collection(db, "emails"), where("email", "==", email));
     const querySnapshot = await getDocs(q);
-    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as any); // Changed 'Email' to 'any' to fix the error
+    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as Email);
     setEmails(fetchedEmails);
   };
 
@@ -42,8 +97,9 @@ export default function Page() {
   const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
   const totalPages = Math.ceil(emails.length / emailsPerPage);
 
-  const handleEmailClick = (email: any) => {
+  const handleEmailClick = (email: Email) => {
     setSelectedEmail(email);
+    setGeneratedReply(email.generatedResponse);
   };
 
   const handlePageChange = (pageNumber: number) => {
@@ -74,19 +130,19 @@ export default function Page() {
           <>
             {currentEmails.map((email) => (
               <div 
-                key={email.id} 
+                key={email.headers.message_id} 
                 className="flex items-center p-4 border-b hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleEmailClick(email)}
               >
                 <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">
-                  {email.from.charAt(0).toUpperCase()}
+                  {email.headers.from.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{email.from}</h3>
-                  <p className="text-sm text-gray-600 truncate">{email.subject}</p>
+                  <h3 className="font-semibold">{email.headers.from}</h3>
+                  <p className="text-sm text-gray-600 truncate">{email.headers.subject}</p>
                   <div className="mt-4 flex items-center">
-                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full border">Inbox</span>
-                    <span className="text-xs text-gray-500 ml-2">2 hours ago</span>
+                    <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 mr-2 rounded-full border">Inbox</span>
+                    <ReactTimeago date={new Date(email.headers.date)} locale="en-US" timeStyle="twitter"/>
                   </div>
                 </div>
               </div>
@@ -119,19 +175,19 @@ export default function Page() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center">
                 <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold mr-4">
-                  {selectedEmail.from.charAt(0).toUpperCase()}
+                  {selectedEmail.headers.from.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">{selectedEmail.from}</h2>
+                  <h2 className="text-xl font-bold">{selectedEmail.headers.from}</h2>
                 </div>
               </div>
               <div className="text-sm text-gray-500">
-                2 hours ago
+                <ReactTimeago date={new Date(selectedEmail.headers.date)} locale="en-US" timeStyle="twitter"/>
               </div>
             </div>
             <div className="mb-4">
-              <p className="text-sm text-gray-700 mb-2">To: {selectedEmail.from}</p>
-              <p className="text-sm text-gray-700 mb-4">Date: {selectedEmail.from}</p>
+              <p className="text-sm text-gray-700 mb-2">To: {selectedEmail.headers.to}</p>
+              <p className="text-sm text-gray-700 mb-4">Date: {selectedEmail.headers.date}</p>
             </div>
             <div className="space-y-4 mb-4">
               <div className="bg-gray-100 p-4 rounded-lg">
@@ -141,7 +197,7 @@ export default function Page() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </h3>
-                <p className="text-sm">AI-generated summary goes here</p>
+                <p className="text-sm">{selectedEmail.subjectSummary}</p>
               </div>
               <div className="bg-gray-100 p-4 rounded-lg">
                 <h3 className="flex items-center font-semibold mb-2">
@@ -150,12 +206,16 @@ export default function Page() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </h3>
-                <p className="text-sm">AI-generated policy check goes here</p>
+                <p className="text-sm">
+                  Eligibility: {selectedEmail.eligibilityData.isEligible ? 'Eligible' : 'Not Eligible'}
+                  <br />
+                  Reason: {selectedEmail.eligibilityData.reason}
+                </p>
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-600">{selectedEmail.subject}</h1>
+            <h1 className="text-2xl font-bold text-gray-600">{selectedEmail.headers.subject}</h1>
             <div className="mb-4">
-              <p>{selectedEmail.body}</p>
+              <p>{selectedEmail.plain}</p>
             </div>
             <div className="flex space-x-4 mt-4">
               <button
@@ -187,7 +247,7 @@ export default function Page() {
                       <input
                         type="email"
                         id="to"
-                        value={selectedEmail.from}
+                        value={selectedEmail.headers.from}
                         readOnly
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       />
@@ -197,7 +257,7 @@ export default function Page() {
                       <input
                         type="text"
                         id="subject"
-                        value={`Re: ${selectedEmail.subject}`}
+                        value={`Re: ${selectedEmail.headers.subject}`}
                         readOnly
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                       />
@@ -246,7 +306,11 @@ export default function Page() {
                       </svg>
                     </button>
                   </div>
-                  <p>Loan details will be displayed here.</p>
+                  <div>
+                    <p><strong>Loan Amount:</strong> ${selectedEmail.loanDetails.loanAmount.toLocaleString()}</p>
+                    <p><strong>Interest Rate:</strong> {(selectedEmail.loanDetails.interestRate * 100).toFixed(2)}%</p>
+                    <p>Loan details will be displayed here.</p>
+                  </div>
                 </div>
               </div>
             )}
@@ -266,8 +330,8 @@ export default function Page() {
           <form onSubmit={handleEmailSubmit}>
             <div className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email:</label>
-                <input
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700">Your Email:</label>
+                <Input
                   type="email"
                   id="email"
                   value={userEmail}
@@ -289,5 +353,4 @@ export default function Page() {
         </DialogContent>
       </Dialog>
     </div>
-  );
-}
+  );}
