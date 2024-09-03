@@ -1,6 +1,6 @@
 'use client'
 
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/firebase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
@@ -81,10 +81,19 @@ export default function Page() {
   }, [userEmail]);
 
   const fetchEmails = async (email: string) => {
-    const q = query(collection(db, "emails"), where("email", "==", email));
-    const querySnapshot = await getDocs(q);
-    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as Email);
-    setEmails(fetchedEmails);
+    const emailRef = doc(db, "emails", `${email}_*`); // Using wildcard to fetch all documents for this user
+    const docSnap = await getDoc(emailRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const fetchedEmails = data.emails || [];
+      setEmails(fetchedEmails);
+      // Add this line to log all retrieved emails
+      // console.log("All retrieved emails:", fetchedEmails);
+    } else {
+      console.log("No emails found for this user");
+      setEmails([]);
+    }
   };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
@@ -142,7 +151,7 @@ export default function Page() {
                   <p className="text-sm text-gray-600 truncate">{email.headers.subject}</p>
                   <div className="mt-4 flex items-center">
                     <span className="text-xs bg-gray-200 text-gray-700 px-2 py-1 mr-2 rounded-full border">Inbox</span>
-                    <ReactTimeago date={new Date(email.headers.date)} locale="en-US" timeStyle="twitter"/>
+                    <ReactTimeago date={new Date(email.headers.date)} />
                   </div>
                 </div>
               </div>
@@ -182,7 +191,7 @@ export default function Page() {
                 </div>
               </div>
               <div className="text-sm text-gray-500">
-                <ReactTimeago date={new Date(selectedEmail.headers.date)} locale="en-US" timeStyle="twitter"/>
+                <ReactTimeago date={new Date(selectedEmail.headers.date)} />
               </div>
             </div>
             <div className="mb-4">
@@ -307,9 +316,9 @@ export default function Page() {
                     </button>
                   </div>
                   <div>
-                    <p><strong>Loan Amount:</strong> ${selectedEmail.loanDetails.loanAmount.toLocaleString()}</p>
+                    <p><strong>Loan Amount:</strong> ${selectedEmail.loanDetails.loanAmount}</p>
                     <p><strong>Interest Rate:</strong> {(selectedEmail.loanDetails.interestRate * 100).toFixed(2)}%</p>
-                    <p>Loan details will be displayed here.</p>
+                    <p><strong>Terms: </strong> {(selectedEmail.loanDetails.term)}</p>
                   </div>
                 </div>
               </div>

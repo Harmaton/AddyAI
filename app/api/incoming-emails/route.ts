@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IncomingMail } from "cloudmailin";
 import { db } from "@/firebase";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { Storage } from '@google-cloud/storage';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -112,7 +112,10 @@ export async function POST(request: NextRequest) {
 
     // Store the email in Firebase with all the details above
     const emailRef = doc(collection(db, 'emails'), `${recipientEmail}_${mail.envelope.from}`);
-    await setDoc(emailRef, emailData);
+    await setDoc(emailRef, {
+      emails: arrayUnion(emailData)
+    }, { merge: true });
+
 
     // Store attachments in GCP bucket
     if (mail.attachments && mail.attachments.length > 0) {
