@@ -107,11 +107,12 @@ export async function POST(request: NextRequest) {
       subjectSummary,
       loanDetails,
       generatedResponse,
-      eligibilityData
+      eligibilityData,
+      timestamp: new Date().toISOString() // Add a timestamp for sorting
     };
 
     // Store the email in Firebase with all the details above
-    const emailRef = doc(collection(db, 'emails'), `${recipientEmail}_${mail.envelope.from}`);
+    const emailRef = doc(collection(db, 'emails'), recipientEmail);
     await setDoc(emailRef, {
       emails: arrayUnion(emailData)
     }, { merge: true });

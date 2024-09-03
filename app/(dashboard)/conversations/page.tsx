@@ -59,6 +59,7 @@ interface Email {
     isEligible: boolean;
     reason: string;
   };
+  timestamp: string;
 }
 
 export default function Page() {
@@ -81,15 +82,19 @@ export default function Page() {
   }, [userEmail]);
 
   const fetchEmails = async (email: string) => {
-    const emailRef = doc(db, "emails", `${email}_*`); // Using wildcard to fetch all documents for this user
+    const emailRef = doc(db, "emails", email);
     const docSnap = await getDoc(emailRef);
-
+  
     if (docSnap.exists()) {
       const data = docSnap.data();
-      const fetchedEmails = data.emails || [];
+      const fetchedEmails: Email[] = data.emails || [];
+      // Sort emails by timestamp, most recent first
+      fetchedEmails.sort((a: Email, b: Email) => 
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      );
       setEmails(fetchedEmails);
-      // Add this line to log all retrieved emails
-      // console.log("All retrieved emails:", fetchedEmails);
+      
+      console.log("All retrieved emails:", fetchedEmails);
     } else {
       console.log("No emails found for this user");
       setEmails([]);
