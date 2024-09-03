@@ -111,12 +111,13 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString() // Add a timestamp for sorting
     };
 
-    // Store the email in Firebase with all the details above
-    const emailRef = doc(collection(db, 'emails'), recipientEmail);
-    await setDoc(emailRef, {
-      emails: arrayUnion(emailData)
-    }, { merge: true });
+    // Store the email in Firebase with the new structure
+    const emailsRef = collection(db, 'emails');
+    const recipientDocRef = doc(emailsRef, recipientEmail);
+    const messagesCollectionRef = collection(recipientDocRef, 'messages');
+    const newMessageDocRef = doc(messagesCollectionRef);
 
+    await setDoc(newMessageDocRef, emailData);
 
     // Store attachments in GCP bucket
     if (mail.attachments && mail.attachments.length > 0) {

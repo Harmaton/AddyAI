@@ -82,23 +82,14 @@ export default function Page() {
   }, [userEmail]);
 
   const fetchEmails = async (email: string) => {
-    const emailRef = doc(db, "emails", email);
-    const docSnap = await getDoc(emailRef);
-  
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      const fetchedEmails: Email[] = data.emails || [];
-      // Sort emails by timestamp, most recent first
-      fetchedEmails.sort((a: Email, b: Email) => 
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-      setEmails(fetchedEmails);
-      
-      console.log("All retrieved emails:", fetchedEmails);
-    } else {
-      console.log("No emails found for this user");
-      setEmails([]);
-    }
+    const recipientDocRef = doc(db, "emails", email);
+    const messagesCollectionRef = collection(recipientDocRef, "messages");
+    const q = query(messagesCollectionRef, orderBy("timestamp", "desc"), limit(20)); // Adjust limit as needed
+    const querySnapshot = await getDocs(q);
+    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as Email);
+    setEmails(fetchedEmails);
+    
+    console.log("All retrieved emails:", fetchedEmails);
   };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
