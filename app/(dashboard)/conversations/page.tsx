@@ -1,9 +1,7 @@
 import React from 'react'
 import { AddMailDialog } from './_components/addMailDialog'
-import Mail from './_components/go-email'
-import { collection, getDocs } from 'firebase/firestore'
-import { db } from '@/firebase'
 import { GetReceiverEmails } from '@/app/actions/emails'
+import Mail from './_components/go-email';
 
 export default async function Page() {
 
@@ -22,9 +20,9 @@ export default async function Page() {
       </div>
 
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      {/* {emailRecipients.map((recipient: { id: React.Key | null | undefined; email: string; messageCount: number }) => (
-        <Mail key={recipient.id} email={recipient.email} messageCount={recipient.messageCount} />
-      ))} */}
+      {emailRecipients.map((recipient) => (
+        <Mail key={recipient} id={recipient} messages={[]} />
+      ))}
     </div>
     </>
   )

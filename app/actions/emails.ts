@@ -5,10 +5,14 @@ import {  collection, getDocs } from 'firebase/firestore';
 
 export async function GetReceiverEmails() {
     try {
-        const emailsRef = collection(db, 'emails');
-        const snapshot = await getDocs(emailsRef);
-        const recipientEmails = snapshot.docs.map(doc => doc.data());
-        
+        const emailsCollectionRef = collection(db, 'emails');
+        const querySnapshot = await getDocs(emailsCollectionRef);
+      
+        const recipientEmails: string[] = [];
+        querySnapshot.forEach((doc) => {
+          recipientEmails.push(doc.id); // Each document ID corresponds to a recipient email
+        });
+      
         return recipientEmails;
         
       } catch (error) {

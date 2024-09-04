@@ -15,13 +15,18 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { PlusIcon } from "lucide-react"
-
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import { db } from "@/firebase"
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
 })
 
 export function AddMailDialog() {
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -29,13 +34,21 @@ export function AddMailDialog() {
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    // await action(values.email)
-    console.log(values)
+  async function onSubmit(value: z.infer<typeof formSchema>) {
+    try {
+      await setDoc(doc(db, "emails", value.email), {
+        email: value.email,
+        messageCount: 0
+      });
+      setOpen(false)
+      router.refresh()
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <div className="w-full h-64 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors duration-200">
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">

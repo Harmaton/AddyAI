@@ -4,13 +4,15 @@ import React from 'react'
 import { useRouter } from 'next/navigation'
 
 interface EmailProps {
-  email: string;
-  messageCount: number;
+  id: string;
+  messages: any[];
 }
 
-export default function Mail({ email, messageCount }: EmailProps) {
+export default function Mail({ id, messages }: EmailProps) {
+  const email = id; // Use the id as the email address
   const initial = email.charAt(0).toUpperCase();
   const router = useRouter();
+  const messageCount = messages ? messages.length : 0;
 
   const handleClick = () => {
     router.push(`/conversations/${email}`);
