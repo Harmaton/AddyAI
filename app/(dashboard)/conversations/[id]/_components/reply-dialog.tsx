@@ -15,15 +15,36 @@ import { Textarea } from "@/components/ui/textarea"
 
 export function ReplyDialog({ email }: { email: Email }) {
   const [replyContent, setReplyContent] = useState(email.generatedResponse);
+  const [open, setOpen] = useState(false);
 
-  const handleReply = () => {
-    // Here you would implement the logic to send the email
-    console.log("Replying with:", replyContent);
-    // You might want to call an API endpoint or use a service to send the email
+  const handleReply = async () => {
+    try {
+      const response = await fetch('/api/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: email.envelope.from,
+          subject: `Re: ${email.headers.subject}`,
+          replyContent: replyContent,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
+      const result = await response.json();
+      console.log("Email sent successfully:", result);
+      setOpen(false); // Close the modal after sending
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">AI Reply</Button>
       </DialogTrigger>
