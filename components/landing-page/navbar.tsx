@@ -55,25 +55,27 @@ export default function Navbar() {
             </SheetHeader>
             <nav className="grid gap-6 mb-4 ">
               <Link
-                href="/dashboard/ai-lending"
+                href="/conversations"
                 className="text-lg font-medium transition-colors hover:text-primary"
                 prefetch={false}
               >
-                AI Lending
+                  Loan Origination
+               
               </Link>
               <Link
-                href="/dashboard/loan-origination"
+                href="/documentai"
                 className="text-lg font-medium transition-colors hover:text-primary"
                 prefetch={false}
               >
-                Loan Origination
+               Document Lending
               </Link>
               <Link
-                href="/dashboard/document-lending"
+                href="/agent"
                 className="text-lg font-medium transition-colors hover:text-primary"
                 prefetch={false}
               >
-                Document Lending
+                 AI Lending Agents
+               
               </Link>
 
               
@@ -115,7 +117,7 @@ export default function Navbar() {
               <Button onClick={() => signOut(auth)} variant="outline">
                 <span className="text-xl mr-2 font-mono">Log out</span>
               </Button>
-              <Link href={"/dashboard"}>
+              <Link href={"/conversations"}>
                 <Button className="bg-violet-500 hover:bg-blue-300 text-white p-2 border border-violet-500 m-auto">
                   <span className="text-xl mr-2 font-mono">Dashboard</span>
                   <ArrowRightCircle className="h-6 w-6 mr-2" />
