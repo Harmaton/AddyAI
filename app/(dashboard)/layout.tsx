@@ -38,11 +38,11 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   }
 
   const links = [
-    {
-        label: "Panel",
-        href: "/dashboard",
-        icon: <LineChart className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
-      },
+    // {
+    //     label: "Panel",
+    //     href: "/dashboard",
+    //     icon: <LineChart className="text-neutral-700 dark:text-neutral-200 h-5 w-5 flex-shrink-0" />,
+    //   },
     {
       label: "Conversations",
       href: "/conversations",

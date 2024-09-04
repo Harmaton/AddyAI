@@ -7,6 +7,7 @@ import { Form, FormField, FormItem, FormLabel, FormControl } from '@/components/
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useForm } from 'react-hook-form'
+import AddAgent from './_components/add-agent'
 
 
 export default function Page() {
@@ -26,52 +27,10 @@ export default function Page() {
   return (
     <div className="p-2">
       {!hasAgent ? (
-       <div className="bg-white rounded-lg shadow-md p-6">
-       <h2 className="text-2xl font-bold mb-4">Create Your Agent</h2>
-       <p className="mb-4">You dont have an agent yet. Create one to get started with your chatbot.</p>
-       <Dialog>
-         <DialogTrigger asChild>
-           <Button className="bg-violet-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-             Create Agent
-           </Button>
-         </DialogTrigger>
-         <DialogContent>
-           <DialogHeader>
-             <DialogTitle>Create Your Agent</DialogTitle>
-           </DialogHeader>
-
-           <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter agent name" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Description</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Enter agent description" {...field} />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit">Create Agent</Button>
-                </form>
-              </Form>
-
-           </DialogContent>
-          </Dialog>
+       <div className="bg-white rounded-lg p-6">
+       <h2 className="text-2xl font-bold mb-4">Create Your AI Assistant</h2>
+       <p className="mb-4">You haven't set up an AI assistant yet. Create one to start automating your communications and tasks.</p>
+        <AddAgent />
         </div>
       ) : (
         <div className="bg-white rounded-lg shadow-md p-6">
