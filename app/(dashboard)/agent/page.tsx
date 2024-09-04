@@ -29,7 +29,7 @@ export default function Page() {
       {!hasAgent ? (
        <div className="bg-white rounded-lg p-6">
        <h2 className="text-2xl font-bold mb-4">Create Your AI Assistant</h2>
-       <p className="mb-4">You haven't set up an AI assistant yet. Create one to start automating your communications and tasks.</p>
+       <p className="mb-4">You havent set up an AI assistant yet. Create one to start automating your communications and tasks.</p>
         <AddAgent />
         </div>
       ) : (
