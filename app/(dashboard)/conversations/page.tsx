@@ -4,11 +4,7 @@ import { GetReceiverEmails } from '@/app/actions/emails'
 import Mail from './_components/go-email';
 
 export default async function Page() {
-
   const emailRecipients = await GetReceiverEmails();
-
-  console.log(emailRecipients)
-
   return (
     <>
     <div className='mb-4'>

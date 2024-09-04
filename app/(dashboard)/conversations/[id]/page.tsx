@@ -8,8 +8,9 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import ReactTimeago from 'react-timeago'
 import { ReplyDialog } from "./_components/reply-dialog";
 import { DetailsDialog } from "./_components/details-dialog";
+import { GetMessagesForEmail } from "@/app/actions/emails";
 
-export default function Page({ params }: { params: { email: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
   const [emails, setEmails] = useState<Email[]>([]);
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
  
@@ -17,19 +18,20 @@ export default function Page({ params }: { params: { email: string } }) {
   const emailsPerPage = 4;
 
   useEffect(() => {
-    if (params.email) {
-      fetchEmails(params.email);
-    }
-  }, [params.email]);
+    const fetchMessages = async () => {
+      if (params.id) {
+        const result = await GetMessagesForEmail(params.id);
+        if (result.success && Array.isArray(result.messages)) {
+          setEmails(result.messages);
+        } else {
+          console.error('Failed to fetch messages:', result.error);
+          setEmails([]);
+        }
+      }
+    };
+    fetchMessages();
+  }, [params.id]);
 
-  const fetchEmails = async (email: string) => {
-    const recipientDocRef = doc(db, "emails", email);
-    const messagesCollectionRef = collection(recipientDocRef, "messages");
-    const q = query(messagesCollectionRef, orderBy("timestamp", "desc"), limit(20)); // Adjust limit as needed
-    const querySnapshot = await getDocs(q);
-    const fetchedEmails = querySnapshot.docs.map(doc => doc.data() as Email);
-    setEmails(fetchedEmails);
-  };
 
   const indexOfLastEmail = currentPage * emailsPerPage;
   const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;

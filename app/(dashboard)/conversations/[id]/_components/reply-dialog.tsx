@@ -14,16 +14,18 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export function ReplyDialog({ email }: { email: Email }) {
-  const [replyContent, setReplyContent] = useState("");
+  const [replyContent, setReplyContent] = useState(email.generatedResponse);
 
   const handleReply = () => {
+    // Here you would implement the logic to send the email
     console.log("Replying with:", replyContent);
+    // You might want to call an API endpoint or use a service to send the email
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Reply</Button>
+        <Button variant="outline">AI Reply</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
@@ -39,7 +41,7 @@ export function ReplyDialog({ email }: { email: Email }) {
             </Label>
             <Input
               id="to"
-              value={email.headers.from}
+              value={email.envelope.from}
               readOnly
               className="col-span-3"
             />

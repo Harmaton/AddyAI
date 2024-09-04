@@ -39,9 +39,18 @@ interface Email {
     email: string;
     subjectSummary: string;
     loanDetails: {
+      name: string;
+      contacts: {
+        phone: string;
+        email: string;
+      };
+      address: string;
+      urgency: string;
       loanAmount: number;
       interestRate: number;
       term: string;
+      employmentStatus: string;
+      annualIncome: number;
     };
     generatedResponse: string;
     eligibilityData: {

@@ -40,9 +40,21 @@ export async function POST(request: NextRequest) {
       List the important details from this email for loan origination from the email: ${mail.plain} :
       { "type": "object",
         "properties": {
+          "name": { "type": "string" },
+          "contacts": { 
+            "type": "object",
+            "properties": {
+              "phone": { "type": "string" },
+              "email": { "type": "string" }
+            }
+          },
+          "address": { "type": "string" },
+          "urgency": { "type": "string" },
           "loanAmount": { "type": "number" },
           "interestRate": { "type": "number" },
-          "term": { "type": "string" }
+          "term": { "type": "string" },
+          "employmentStatus": { "type": "string" },
+          "annualIncome": { "type": "number" }
         }
       }`;
 
@@ -50,7 +62,7 @@ export async function POST(request: NextRequest) {
       const loanDetails = JSON.parse(loanData.response.text());
 
       // Generate a response using gemini
-      const responseprompt = `Generate a friendly response to ${mail.envelope.from}, do not include their email in the response but only the name. His email body is ${mail.plain}`;
+      const responseprompt = `Generate a friendly response to ${mail.envelope.from}, do not include their email in the response but only the name. His email body is ${mail.plain}, also, ask for any detail not recorded or null in ${loanDetails}`;
       const responsedata = await model.generateContent(responseprompt);
       const generatedResponse = responsedata.response.text();
 

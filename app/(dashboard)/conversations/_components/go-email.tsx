@@ -15,7 +15,7 @@ export default function Mail({ id, messages }: EmailProps) {
   const messageCount = messages ? messages.length : 0;
 
   const handleClick = () => {
-    router.push(`/conversations/${email}`);
+    router.push(`/conversations/${id}`);
   };
 
   return (
