@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { IncomingMail } from "cloudmailin";
 import { db } from "@/firebase";
-import { arrayUnion, collection, doc, setDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { Storage } from '@google-cloud/storage';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     let mail: IncomingMail = await request.json();
 
     // Extract the receiver addresses
-    const recipientEmails = mail.envelope.to; // this could be multiple addresses
+    const recipientEmails = mail.envelope.to;
 
     // Process each recipient email
     for (const recipientEmail of recipientEmails) {
@@ -28,8 +28,7 @@ export async function POST(request: NextRequest) {
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       const prompt = `Write a short summary of this email ${mail.plain}`;
       const result = await model.generateContent(prompt);
-      const geminiData = result.response.text();
-      const subjectSummary = geminiData;
+      const subjectSummary = result.response.text();
 
       // Generate JSON return type loan details using gemini
       let jsonmodel = genAI.getGenerativeModel({
@@ -103,15 +102,26 @@ export async function POST(request: NextRequest) {
         loanDetails,
         generatedResponse,
         eligibilityData,
-        timestamp: new Date().toISOString() // Add a timestamp for sorting
+        timestamp: new Date().toISOString()
       };
 
       // Store the email in Firebase with the new structure
       const recipientDocRef = doc(db, 'emails', recipientEmail);
 
-      await updateDoc(recipientDocRef, {
-        messages: arrayUnion(emailData)
-      });
+      // Check if the document exists
+      const docSnap = await getDoc(recipientDocRef);
+
+      if (docSnap.exists()) {
+        // Document exists, update it
+        await updateDoc(recipientDocRef, {
+          messages: arrayUnion(emailData)
+        });
+      } else {
+        // Document doesn't exist, create it
+        await setDoc(recipientDocRef, {
+          messages: [emailData]
+        });
+      }
 
       // Store attachments in GCP bucket
       if (mail.attachments && mail.attachments.length > 0) {
