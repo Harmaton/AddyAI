@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     let mail: IncomingMail = await request.json();
 
     // Extract the receiver addresses
-    const recipientEmails = mail.envelope.to;
+    const recipientEmails = mail.envelope.recipients
 
     // Process each recipient email
     for (const recipientEmail of recipientEmails) {
