@@ -20,7 +20,7 @@ export default function Signup() {
     
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/login");
+      router.push("/conversations");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

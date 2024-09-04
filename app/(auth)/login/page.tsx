@@ -18,7 +18,7 @@ export default function Login() {
     const auth = getAuth();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      router.push("/conversations");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
